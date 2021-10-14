@@ -1,0 +1,28 @@
+{
+  "name": "videocat",
+  "productName": "VideoCat",
+  "version": "1.0.0",
+  "description": "Video cataloger",
+  "main": "app/main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pack": "electron-packager . valcat --overwrite --asar --icon=icons/v.ico --prune=true --out=release"
+  },
+  "keywords": [
+    "video",
+    "catalog"
+  ],
+  "author": "Jose De Cordova",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^12.0.2",
+    "electron-packager": "^15.2.0"
+  },
+  "dependencies": {
+    "crypto-js": "^4.0.0",
+    "file-type": "^16.4.0",
+    "fs-extra": "^10.0.0",
+    "video-length": "^2.0.6"
+  }
+}

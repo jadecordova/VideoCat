@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <!--meta http-equiv="Content-Security-Policy" content="img-src 'self' data:;default-src 'self'; script-src 'self'"-->
+    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+    <link rel="stylesheet" type="text/css" href="app.css" />
+    <title>Valerie Video Catalog</title>
+</head>
+
+<body>
+
+    <!----------------------------------------------------------------------------- STARS -->
+    <div id="stars-panel" class="main-panel hidden">
+        <div class="main-panel-header">
+            <img src="../icons/star.png" class="icon">
+            <div class="main-panel-title" id="stars-panel-title"></div>
+            <button class="close-panel-button">X</button>
+        </div>
+        <div id="star-info-content" class="component">
+            <canvas id="image" class="image" width="400" height="400"></canvas>
+            <input class="id panel-input" type="hidden" name="id" id="id" />
+            <input class="firstName panel-input" type="text" name="firstName" id="firstName" placeholder="First name" />
+            <input class="lastName panel-input" type="text" name="lastName" id="lastName" placeholder="Last name" />
+            <input class="birthPlace panel-input" type="text" name="birthPlace" id="birthPlace"
+                placeholder="Birth place" />
+            <input class="score panel-input" type="number" name="score" id="score" placeholder="Score" />
+            <label>Birth date:</label>
+            <input class="day panel-input" type="number" name="day" id="day" placeholder="Day" />
+            <input class="month panel-input" type="number" name="month" id="month" placeholder="Month" />
+            <input class="year panel-input" type="number" name="year" id="year" placeholder="Year" />
+            <textarea class="aliases panel-input" name="aliases" id="aliases" rows="4" cols="50"
+                placeholder="Aliases"></textarea>
+            <div id="arrows">
+                <div id="left-arrow" class="triangle left"></div>
+                <div id="right-arrow" class="triangle right"></div>
+            </div>
+            <div id="buttons">
+                <button type="button" class="large right" id="paste-button">PASTE</button>
+                <button type="button" class="large right" id="star-action-button">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!----------------------------------------------------------------------------- SEARCH STARS -->
+    <div id="searchstars-panel" class="main-panel hidden">
+        <div class="main-panel-header">
+            <img src="../icons/star.png" class="icon">
+            <div class="main-panel-title">Search stars</div>
+            <button class="close-panel-button">X</button>
+        </div>
+        <div id="star-search-content" class="component">
+            <input class="firstName panel-input" id="firstName" placeholder="First name">
+            <input class="lastName panel-input" id="lastName" placeholder="Last name">
+            <details id="advanced-search">
+                <summary>Advanced</summary>
+                <div>
+                    <input class="score panel-input" id="score" type="number" placeholder="Score">
+                    <label>Birth date:</label>
+                    <input class="day panel-input" id="day" type="number" placeholder="Day">
+                    <input class="month panel-input" id="month" type="number" placeholder="Month">
+                    <input class="year panel-input" id="year" type="number" placeholder="Year">
+                    <input class="birthPlace panel-input" id="birthPlace" placeholder="Birth place">
+                    <label class="switch-button"><input class="hard panel-input" type="checkbox" id="hard">
+                        <div class="slide round">Hard</div>
+                    </label>
+                </div>
+            </details>
+            <button type="button" id="star-search-button" class="large right">SEARCH</button>
+        </div>
+        <div id="search-stars-grid" class="card-grid small"></div>
+    </div>
+
+    <!----------------------------------------------------------------------------- SUBSTITUTIONS -->
+    <div id="substitutions-panel" class="main-panel hidden">
+        <div class="main-panel-header">
+            <img src="../icons/star.png" class="icon">
+            <div class="main-panel-title">Substitute star names</div>
+            <button class="close-panel-button">X</button>
+        </div>
+        <div id="substitutions-panel-content" class="component">
+            <div id="substitutions-panel-fields"></div>
+            <div id="substitutions-panel-buttons">
+                <button type="button" id="substitutions-panel-add-item-button">+</button>
+                <button type="button" id="substitutions-panel-save-substitutions-button" class="large">SAVE</button>
+            </div>
+        </div>
+    </div>
+
+    <!----------------------------------------------------------------------------- SETTINGS -->
+    <div id="settings-panel" class="main-panel hidden">
+        <div class="main-panel-header">
+            <img src="../icons/gear.png" class="icon">
+            <div class="main-panel-title">Settings</div>
+            <button class="close-panel-button">X</button>
+        </div>
+        <div id="settings-content" class="component">
+            <details id="virtualDubPanel">
+                <summary id="virtualDubTitle">VirtualDub</summary>
+                <div id="virtualDubPanel-content">
+                    <input class="virtualdub panel-input" id="virtualdub" placeholder="VirtualDub .exe file" value="">
+                    <button type="button" id="virtualdub-button" class="small">...</button>
+                    <div id="virtualDubFolder"></div>
+                </div>
+            </details>
+            <details id="thumbnailsPanel">
+                <summary id="thumbnailsTitle">Thumbnails</summary>
+                <div id="thumbnailsPanel-content">
+                    <input class="width panel-input" type="number" placeholder="Width" id="width" value="">
+                    <input class="height panel-input" type="number" placeholder="Height" id="height" value="">
+                    <input class="thumbnails panel-input" type="number" placeholder="Number of thumbnails"
+                        id="thumbnails" value="">
+                </div>
+            </details>
+            <button type="button" id="settings-OK" class="large right" disabled>OK</button>
+        </div>
+    </div>
+
+    <!----------------------------------------------------------------------------- TAGS -->
+    <div id="tags-panel" class="main-panel hidden">
+        <div class="main-panel-header">
+            <img src="../icons/tag.png" class="icon">
+            <div class="main-panel-title">Tags</div>
+            <button class="close-panel-button">X</button>
+        </div>
+        <div id="tags-panel-content" class="component"></div>
+    </div>
+
+    <!----------------------------------------------------------------------------- EDIT TAGS -->
+    <div id="edittags-panel" class="main-panel hidden">
+        <div class="main-panel-header">
+            <img src="../icons/tag.png" class="icon">
+            <div class="main-panel-title">Edit tags</div>
+            <button class="close-panel-button">X</button>
+        </div>
+        <div id="edit-tags-content" class="component">
+            <div id="edit-tags-buttons">
+                <button id="add-item-button">+</button>
+                <button id="save-tags-button">SAVE</button>
+            </div>
+        </div>
+    </div>
+
+    <!----------------------------------------------------------------------------- LOAD VIDEOS -->
+    <div id="loadvideos-panel" class="main-panel hidden">
+        <div class="main-panel-header">
+            <img src="../icons/video.png" class="icon">
+            <div class="main-panel-title">Load videos</div>
+            <button class="close-panel-button">X</button>
+        </div>
+        <div id="load-videos-content" class="component">
+            <input class="videosFolder panel-input" id="videosFolder" placeholder="Videos folder">
+            <button type="button" id="videosFolder-button" class="small">...</button>
+            <input class="thumbsFolder panel-input" id="thumbsFolder" placeholder="Thumbs folder">
+            <button type="button" id="thumbsFolder-button" class="small">...</button>
+            <div id="info">
+                <input class="disk panel-input" id="disk" type="number" placeholder="Disk">
+                <input class="container panel-input" id="container" type="number" placeholder="Container">
+            </div>
+            <div id="last-row">
+                <label class="switch-button"><input class="dashes panel-input" type="checkbox" id="dashes">
+                    <div class="slide round">Dashes</div>
+                </label>
+                <button type="button" id="load-videos-button" class="large right">LOAD VIDEOS</button>
+            </div>
+        </div>
+    </div>
+
+    <!----------------------------------------------------------------------------- TOP VIDEOS -->
+    <div id="searchvideos-panel" class="main-panel hidden">
+        <div class="main-panel-header">
+            <img src="../icons/video.png" class="icon">
+            <div class="main-panel-title">Search videos</div>
+            <button class="close-panel-button">X</button>
+        </div>
+        <div id="search-videos-content" class="component">
+            <input class="id panel-input" type="number" id="id" placeholder="ID">
+            <input class="disk panel-input" type="number" id="disk" placeholder="Disk">
+            <input class="container panel-input" type="number" id="container" placeholder="Container">
+            <div id="score-section">
+                <input class="score panel-input" type="number" id="score" placeholder="Score">
+                <div>
+                    <label class="radio-container">Exact
+                        <input class="exactScore panel-input" type="radio" id="exact-score" name="score-type"
+                            value="exact" checked>
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="radio-container">Less
+                        <input class="lessScore panel-input" type="radio" id="less-score" name="score-type"
+                            value="less">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="radio-container">More
+                        <input class="moreScore panel-input" type="radio" id="more-score" name="score-type"
+                            value="more">
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+            </div>
+            <div id="size-section">
+                <input class="size panel-input" type="number" id="size" placeholder="Size (MB)">
+                <div>
+                    <label class="radio-container">Less
+                        <input class="lessSize panel-input" type="radio" id="less-size" name="size-type" value="less">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="radio-container">More
+                        <input class="moreSize panel-input" type="radio" id="more-size" name="size-type" value="more"
+                            checked>
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+            </div>
+            <div id="checkboxes">
+                <label class="switch-button-small">
+                    <input class="special panel-input" type="checkbox" id="special">
+                    <div class="slide round">Special</div>
+                </label>
+                <label class="switch-button-small">
+                    <input class="modified panel-input" type="checkbox" id="modified">
+                    <div class="slide round">Modif.</div>
+                </label>
+                <label class="switch-button-small">
+                    <input class="toBackup panel-input" type="checkbox" id="toBackup">
+                    <div class="slide round">Backup</div>
+                </label>
+                <label class="switch-button-small">
+                    <input class="toDelete panel-input" type="checkbox" id="toDelete">
+                    <div class="slide round">Delete</div>
+                </label>
+            </div>
+            <fieldset>
+                <leyend>Stars</leyend>
+                <div id="stars"></div>
+            </fieldset>
+            <fieldset>
+                <leyend>Tags</leyend>
+                <div id="tags"></div>
+            </fieldset>
+            <button id="search" class="large">SEARCH</button>
+        </div>
+    </div>
+
+    <!----------------------------------------------------------------------------- TOP VIDEOS -->
+    <div id="topvideos-panel" class="main-panel hidden">
+        <div class="main-panel-header">
+            <img src="../icons/video.png" class="icon">
+            <div class="main-panel-title">Top videos</div>
+            <button class="close-panel-button">X</button>
+        </div>
+        <div id="top-videos-content" class="component">
+            <input class="disk panel-input" type="number" placeholder="Disk">
+            <input class="container panel-input" type="number" placeholder="Container">
+            <input class="maximum panel-input" type="number" placeholder="Number of videos">
+            <button class="large" id="top-videos-button">VIEW</button>
+        </div>
+    </div>
+
+    <!----------------------------------------------------------------------------- STORAGE INFO -->
+    <div id="storageinfo-panel" class="main-panel hidden">
+        <div class="main-panel-header">
+            <img src="../icons/disk.png" class="icon">
+            <div class="main-panel-title">Storage info</div>
+            <button class="close-panel-button">X</button>
+        </div>
+        <div id="storage-info-content" class="component">
+            <div id="storage-info-fields">
+                <input class="disk panel-input" type="number" placeholder="Disk">
+                <input class="container panel-input" type="number" placeholder="Container">
+                <button class="view-button" id="info-button"><img src="../icons/eye.png" alt="Show" title="SHOW"
+                        class="icon"></button>
+            </div>
+            <div id="storage-info-values">
+                <div class="storage-info-label">Videos:</div>
+                <div id="total-videos"></div>
+                <button class="view-button" id="total-button"><img src="../icons/eye.png" alt="Show" title="SHOW"
+                        class="icon"></button>
+
+                <div class="storage-info-label">Special:</div>
+                <div id="special-videos"></div>
+                <button class="view-button" id="special-button"><img src="../icons/eye.png" alt="Show" title="SHOW"
+                        class="icon"></button>
+
+                <div class="storage-info-label">Backed-up:</div>
+                <div id="backedup-videos"></div>
+                <button class="view-button" id="backedup-button"><img src="../icons/eye.png" alt="Show" title="SHOW"
+                        class="icon"></button>
+
+                <div class="storage-info-label">Modified:</div>
+                <div id="modified-videos"></div>
+                <button class="view-button" id="modified-button"><img src="../icons/eye.png" alt="Show" title="SHOW"
+                        class="icon"></button>
+
+                <div class="storage-info-label">To backup:</div>
+                <div id="tobackup-videos"></div>
+                <button class="view-button" id="tobackup-button"><img src="../icons/eye.png" alt="Show" title="SHOW"
+                        class="icon"></button>
+
+                <div class="storage-info-label">Highest score:</div>
+                <div id="highest-score"></div>
+                <button class="view-button" id="highest-button"><img src="../icons/eye.png" alt="Show" title="SHOW"
+                        class="icon"></button>
+
+                <div class="storage-info-label">To delete:</div>
+                <div id="todelete-videos"></div>
+                <button class="view-button" id="todelete-button"><img src="../icons/eye.png" alt="Show" title="SHOW"
+                        class="icon"></button>
+
+                <button id="update-button" class="large">UPDATE</button>
+                <button id="delete-button" class="large">DELETE</button>
+                <button id="backup-button" class="large">BACKUP</button>
+                <button id="clean-button" class="large">CLEAN</button>
+            </div>
+        </div>
+    </div>
+
+    <!----------------------------------------------------------------------------- CONTENT -->
+    <div id="content">content</div>
+
+    <!----------------------------------------------------------------------------- PROGRESS -->
+    <div id="progress-bar-container" class="hidden">
+        <div id="progress-bar-title"></div>
+        <progress id="progress" max="100" value="20"></progress>
+    </div>
+
+    <!----------------------------------------------------------------------------- TEMPLATES -->
+    <template id="card-template">
+        <div class="card">
+            <div class="card-title"></div>
+            <div class="card-content"></div>
+        </div>
+    </template>
+
+    <template id="star-card-template">
+        <div class="star-card-container">
+            <div class="star-card-image"></div>
+            <div class="star-card-info">
+                <div class="star-card-age"></div>
+                <div class="star-card-bottom-row">
+                    <div class="star-card-id">ID:<span></span></div>
+                    <div class="star-card-score">Score:<span></span></div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="stars-screen-template">
+        <div>
+            <div id="letters-panel">
+                <button id="A" class="initials-button">A</button>
+                <button id="B" class="initials-button">B</button>
+                <button id="C" class="initials-button">C</button>
+                <button id="D" class="initials-button">D</button>
+                <button id="E" class="initials-button">E</button>
+                <button id="F" class="initials-button">F</button>
+                <button id="G" class="initials-button">G</button>
+                <button id="H" class="initials-button">H</button>
+                <button id="I" class="initials-button">I</button>
+                <button id="J" class="initials-button">J</button>
+                <button id="K" class="initials-button">K</button>
+                <button id="L" class="initials-button">L</button>
+                <button id="M" class="initials-button">M</button>
+                <button id="N" class="initials-button">N</button>
+                <button id="O" class="initials-button">O</button>
+                <button id="P" class="initials-button">P</button>
+                <button id="Q" class="initials-button">Q</button>
+                <button id="R" class="initials-button">R</button>
+                <button id="S" class="initials-button">S</button>
+                <button id="T" class="initials-button">T</button>
+                <button id="U" class="initials-button">U</button>
+                <button id="V" class="initials-button">V</button>
+                <button id="W" class="initials-button">W</button>
+                <button id="X" class="initials-button">X</button>
+                <button id="Y" class="initials-button">Y</button>
+                <button id="Z" class="initials-button">Z</button>
+            </div>
+            <div class="card-grid big"></div>
+        </div>
+    </template>
+
+    <template id="tag-item-template">
+        <div class="tag-item">
+            <input type="text" class="tag-key-field panel-input" placeholder="Code" maxlength="5">
+            <input type="text" class="tag-name-field panel-input" placeholder="Name">
+            <input type="number" class="tag-score-field panel-input" placeholder="Score">
+            <button class="delete-tag-item panel-input">X</button>
+        </div>
+    </template>
+
+    <template id="video-strip-template">
+        <div class="video-strip-content">
+            <div class="video-strip-info">
+                <div class="video-strip-image"></div>
+                <div class="video-strip-id">ID: <span></span></div>
+                <div class="video-strip-name">Name: <span></span></div>
+                <div class="video-strip-score">Score: <span></span></div>
+                <div class="video-strip-length">Length: <span></span></div>
+                <div class="video-strip-size">Size: <span></span></div>
+                <label class="switch-button right">
+                    <input type="checkbox" class="include" checked>
+                    <div class="slide round">Include</div>
+                </label>
+            </div>
+            <details closed>
+                <summary>Thumbs</summary>
+                <div class="video-thumbs"></div>
+            </details>
+        </div>
+    </template>
+
+    <template id="video-info-template">
+        <div class="video-card-panes">
+            <div class="name-field">
+                <label for="name">Name:</label>
+                <div class="name"></div>
+            </div>
+            <div class="video-card-left">
+                <div class="video-card-fixed">
+                    <div class="id">ID: <span></span></div>
+                    <div class="length">Length: <span></span></div>
+                    <div class="size">Size: <span></span></div>
+                </div>
+                <label class="switch-button">
+                    <input type="checkbox" class="special">
+                    <div class="slide round">Special</div>
+                </label>
+                <label class="switch-button">
+                    <input type="checkbox" class="toBackup">
+                    <div class="slide round">Backup</div>
+                </label>
+                <label class="switch-button">
+                    <input type="checkbox" class="toDelete">
+                    <div class="slide round">Delete</div>
+                </label>
+                <label for="disk">Disk:</label>
+                <label for="container">Container:</label>
+                <label for="score">Score:</label>
+                <input type="number" class="disk" value="">
+                <input type="number" class="container" value="">
+                <input class="score" type="number" value="">
+                <div class="modified"></div>
+                <div class="backedup"></div>
+            </div>
+            <div class="video-card-right">
+                <div class="video-icons">
+                    <div class="video-stars"></div>
+                    <div class="video-tags"></div>
+                </div>
+            </div>
+            <details closed>
+                <summary>Thumbs</summary>
+                <div class="video-thumbs"></div>
+            </details>
+        </div>
+    </template>
+
+    <template id="star-screen-template">
+        <div id="star-screen-content">
+            <div id="left-arrow">
+                <div class='triangle left'></div>
+            </div>
+            <img id="portrait" width="400" height="400"></canvas>
+            <div id="star-screen-info">
+                <div id="fullName"></div>
+                <div id="birthDate"></div>
+                <div id="birthPlace"></div>
+                <div id="aliases"></div>
+                <div id="score"></div>
+                <div id="tags"></div>
+            </div>
+            <div id="right-arrow">
+                <div class='triangle right'></div>
+            </div>
+        </div>
+    </template>
+
+    <template id="poster-card-template">
+        <div class="poster-card-content">
+            <div class="poster-card-title">
+                <div>
+                    <span class="poster-card-label">ID:</span><span class="poster-card-id"></span>
+                </div>
+                <div>
+                    <span class="poster-card-label">Score:</span><span class="poster-card-score"></span>
+                </div>
+            </div>
+            <div class="poster-card-image"></div>
+            <div class="poster-card-footer">
+                <span class="poster-card-flags special">S</span>
+                <span class="poster-card-flags toBackup">B</span>
+                <span class="poster-card-flags toDelete">D</span>
+                <span class="poster-card-flags modified">M</span>
+            </div>
+        </div>
+    </template>
+
+
+    <script src="./renderer.js"></script>
+</body>
+
+</html>

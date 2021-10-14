@@ -1,0 +1,54 @@
+/******************************************************************************************************************************* FONTS */
+@font-face {
+    font-family: Light;
+    src: url(../fonts/OpenSans-Light.ttf);
+  }
+  
+@font-face {
+    font-family: Normal;
+    src: url(../fonts/OpenSans-Regular.ttf);
+  }
+
+@font-face {
+    font-family: Bold;
+    src: url(../fonts/OpenSans-Bold.ttf);
+}
+
+@font-face {
+    font-family: Condensed;
+    src: url(../fonts/OpenSansCondensed-Bold.ttf);
+}
+
+@font-face {
+    font-family: CondensedLight;
+    src: url(../fonts/OpenSansCondensed-Light.ttf);
+}
+
+/******************************************************************************************************************************* RESET */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/******************************************************************************************************************************* BASIC */
+html,
+body{
+    height: 100%;
+    position: relative;
+}
+
+body{
+    font-family: Normal;
+    display: flex;
+    width: 100%;
+    overflow-y: hidden;
+}
+
+/******************************************************************************************************************************* GENERAL */
+.hidden{
+    display: none;
+}
+
