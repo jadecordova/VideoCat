@@ -13,34 +13,33 @@
 
     <!----------------------------------------------------------------------------- STARS -->
     <div id="stars-panel" class="main-panel hidden">
+
         <div class="main-panel-header">
             <img src="../icons/star.png" class="icon">
             <div class="main-panel-title" id="stars-panel-title"></div>
             <button class="close-panel-button">X</button>
         </div>
+
         <div id="star-info-content" class="component">
             <canvas id="image" class="image" width="400" height="400"></canvas>
             <input class="id panel-input" type="hidden" name="id" id="id" />
             <input class="firstName panel-input" type="text" name="firstName" id="firstName" placeholder="First name" />
             <input class="lastName panel-input" type="text" name="lastName" id="lastName" placeholder="Last name" />
-            <input class="birthPlace panel-input" type="text" name="birthPlace" id="birthPlace"
-                placeholder="Birth place" />
-            <input class="score panel-input" type="number" name="score" id="score" placeholder="Score" />
+            <input class="birthPlace panel-input" type="text" name="birthPlace" id="birthPlace" placeholder="Birth place" />
             <label>Birth date:</label>
             <input class="day panel-input" type="number" name="day" id="day" placeholder="Day" />
             <input class="month panel-input" type="number" name="month" id="month" placeholder="Month" />
             <input class="year panel-input" type="number" name="year" id="year" placeholder="Year" />
-            <textarea class="aliases panel-input" name="aliases" id="aliases" rows="4" cols="50"
-                placeholder="Aliases"></textarea>
             <div id="arrows">
                 <div id="left-arrow" class="triangle left"></div>
                 <div id="right-arrow" class="triangle right"></div>
             </div>
             <div id="buttons">
-                <button type="button" class="large right" id="paste-button">PASTE</button>
+                <button type="button" class="large right" id="paste-button">PASTE IMAGE</button>
                 <button type="button" class="large right" id="star-action-button">OK</button>
             </div>
         </div>
+
     </div>
 
     <!----------------------------------------------------------------------------- SEARCH STARS -->
@@ -72,22 +71,6 @@
         <div id="search-stars-grid" class="card-grid small"></div>
     </div>
 
-    <!----------------------------------------------------------------------------- SUBSTITUTIONS -->
-    <div id="substitutions-panel" class="main-panel hidden">
-        <div class="main-panel-header">
-            <img src="../icons/star.png" class="icon">
-            <div class="main-panel-title">Substitute star names</div>
-            <button class="close-panel-button">X</button>
-        </div>
-        <div id="substitutions-panel-content" class="component">
-            <div id="substitutions-panel-fields"></div>
-            <div id="substitutions-panel-buttons">
-                <button type="button" id="substitutions-panel-add-item-button">+</button>
-                <button type="button" id="substitutions-panel-save-substitutions-button" class="large">SAVE</button>
-            </div>
-        </div>
-    </div>
-
     <!----------------------------------------------------------------------------- SETTINGS -->
     <div id="settings-panel" class="main-panel hidden">
         <div class="main-panel-header">
@@ -114,31 +97,6 @@
                 </div>
             </details>
             <button type="button" id="settings-OK" class="large right" disabled>OK</button>
-        </div>
-    </div>
-
-    <!----------------------------------------------------------------------------- TAGS -->
-    <div id="tags-panel" class="main-panel hidden">
-        <div class="main-panel-header">
-            <img src="../icons/tag.png" class="icon">
-            <div class="main-panel-title">Tags</div>
-            <button class="close-panel-button">X</button>
-        </div>
-        <div id="tags-panel-content" class="component"></div>
-    </div>
-
-    <!----------------------------------------------------------------------------- EDIT TAGS -->
-    <div id="edittags-panel" class="main-panel hidden">
-        <div class="main-panel-header">
-            <img src="../icons/tag.png" class="icon">
-            <div class="main-panel-title">Edit tags</div>
-            <button class="close-panel-button">X</button>
-        </div>
-        <div id="edit-tags-content" class="component">
-            <div id="edit-tags-buttons">
-                <button id="add-item-button">+</button>
-                <button id="save-tags-button">SAVE</button>
-            </div>
         </div>
     </div>
 
