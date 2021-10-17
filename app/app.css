@@ -121,7 +121,7 @@ summary {
 .main-panel {
     width: fit-content;
     height: 100%;
-    background-color: var(--background-dark);
+    background-color: var(--secondary);
     flex-shrink: 0;
     border-left: 2px solid var(--accent);
     padding: 10px;
@@ -134,28 +134,28 @@ summary {
     gap: 10px;
     font-family: 'Bold';
     font-size: 20px;
-    background-color: var(--darkest);
-    color: var(--text-light);
+    background-color: var(--secondary);
+    color: var(--text-dark);
 }
 
 .close-panel-button {
     margin-left: auto;
-    background-color: var(--darkest);
+    background-color: var(--primary);
     font-family: Bold;
-    color: var(--text-light);
+    color: var(--text-dark);
 }
 
 .close-panel-button:hover {
-    background-color: var(--components);
+    background-color: var(--accent);
 }
 
 .component {
-    background-color: var(--components);
-    color: var(--text-light);
+    background-color: var(--primary);
+    color: var(--text-dark);
 }
 
 .panel-input {
-    background-color: var(--inputs);
+    background-color: white;
     color: var(--text-dark);
 }
 
@@ -282,10 +282,7 @@ button.right {
 
 .star-card-bottom-row {
     display: flex;
-}
-
-.star-card-id {
-    justify-self: star;
+    justify-content: center;
 }
 
 .star-card-id span {
@@ -495,7 +492,9 @@ button.right {
 }
 
 .video-card-left label {
-    margin-top: 20px;
+    margin-top: 10px;
+    position: relative;
+    top: -5px;
 }
 
 .video-card-left .modified, .video-card-left .backedup {
@@ -520,6 +519,14 @@ button.right {
 .video-card-left .disk, .video-card-left .container, .video-card-left .score {
     width: 90px;
     margin-top: -5px;
+}
+
+.video-card-left label[for=score]{
+    grid-row: 3;
+}
+
+.video-card-left .score{
+    grid-row: 3;
 }
 
 .video-card-fixed {
@@ -575,6 +582,15 @@ button.right {
     right: 10px;
 }
 
+#edit-video-buttons{
+    display: flex;
+    justify-content: flex-end;
+}
+
+.edit-back{
+    margin-right: 30px;
+    margin-left: 20px;
+}
 /******************************************************************************************************************************* PROGRESS */
 
 #progress-bar-container {
@@ -636,7 +652,7 @@ progress {
 }
 
 .initials-button-active{
-    background-color: var(--accent);
+    background-color: white;
 }
 
 /******************************************************************************************************************************* TRIANGLES */
@@ -649,12 +665,12 @@ progress {
 }
 
 .triangle.right{
-    border-color: transparent transparent var(--secondary) transparent;
+    border-color: transparent transparent var(--text-dark) transparent;
     transform: rotate(90deg);
 }
 
 .triangle.left{
-    border-color: transparent transparent var(--secondary) transparent;
+    border-color: transparent transparent var(--text-dark) transparent;
     transform: rotate(-90deg);
 }
 
@@ -728,6 +744,7 @@ progress {
     grid-column: 2/-1;
     display: flex;
     justify-content: flex-end;
+    margin-top: 30px;
     gap: 5px;
 }
 
@@ -736,7 +753,7 @@ progress {
     grid-column: 1;
     display: flex;
     justify-content: flex-start;
-    margin-top: 10px;
+    margin-top: 30px;
 }
 
 /******************************************************************************************************************************* SCROLL BARS */
@@ -1158,7 +1175,7 @@ input:checked + .slide:before {
 #search-videos-content fieldset{
     grid-column: 1/-1;
     grid-column: 1/-1;
-    border: 1px solid var(--accent);
+    border: 1px solid var(--shadow);
     padding: 5px;
 }
 
@@ -1213,4 +1230,21 @@ input:checked + .slide:before {
 
 .video-strip-info span{
     font-family: Condensed;
+}
+
+/******************************************************************************************************************************* VIDEO STRIPS */
+#welcome{
+    border: 2px solid var(--background-dark);
+    padding: 50px;
+    margin: 50px auto 0 auto;
+    width: fit-content;
+}
+
+#welcome h1 {
+    padding-bottom: 30px;
+    text-align: center;
+}
+
+#welcome h2 {
+    padding-bottom: 10px;
 }

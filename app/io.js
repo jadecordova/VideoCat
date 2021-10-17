@@ -115,13 +115,13 @@ function getFiles( {folder, result = [], recursive = true} )
 
         files.forEach( function ( item )
         {
-            if ( fs.statSync( `${folder}\\${item}` ).isDirectory() )
+            if ( fs.statSync( `${folder}/${item}` ).isDirectory() )
             {
-                if ( recursive ) result = getFiles( {folder: `${folder}\\${item}`, result, recursive: true} );
+                if ( recursive ) result = getFiles( {folder: `${folder}/${item}`, result, recursive: true} );
             }
             else
             {
-                result.push( `${folder}\\${item}` );
+                result.push( `${folder}/${item}` );
             }
         } )
 

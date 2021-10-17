@@ -21,6 +21,7 @@ const {
 const {
     decryptImage
 } = require('./encryption');
+const { assert } = require('console');
 
 
 //----------------------------------------------------------------------------------------------------------------------------------------
@@ -41,9 +42,8 @@ class Video {
      * @param {Number} params.size - Video file size (bytes). 
      * @param {String[]} params.stars - Array of video star names. 
      * @param {String[]} params.tags - Array of video tags. 
-     * @param {Boolean} params.modified - Does this video needs to be saved? 
      * @param {String} params.poster - Thumbnail file name to be used as video poster. 
-     * @param {String} params.thumbsFolder - Folder containing video thumbnails. 
+     * @param {String} params.thumbsFolder - Path to temporal non encrypted thumbs folder. 
      */
     constructor(
         {
@@ -52,30 +52,25 @@ class Video {
             id = null,
             filename = '',
             path = '',
-            name = '',
             disk = null,
             length = 0,
             score = 0,
             size = 0,
             stars = [],
             tags = [],
-            modified = false,
             poster = '0001',
-            thumbsFolder = ''
+            thumbsFolder = null
         }) {
         this.$ = $;
         this.isNew = isNew;
         this.id = id;
         this.filename = filename;
-        this.name = name;
         this.disk = disk;
         this.length = length;
         this.score = score;
         this.size = size;
         this.stars = stars;
         this.tags = tags;
-        this.modified = modified;
-        this.thumbsFolder = thumbsFolder;
         this.poster = poster;
         this.card = null;
 
@@ -85,9 +80,9 @@ class Video {
 
         if (this.isNew) {
             this.path = path;
+            this.thumbsFolder = thumbsFolder;
         }
     }
-
 
     //----------------------------------------------------------------------------------------------------------------------------------------
     /**
@@ -119,31 +114,6 @@ class Video {
 
     //----------------------------------------------------------------------------------------------------------------------------------------
     /**
-     * Adds tag to video.
-     * @param {string} tag 
-     */
-    addTag(tag) {
-
-        if (this.tags.includes(tag)) {
-            ipcRenderer.sendSync('dialog', {
-                type: 'inform',
-                title: 'Add Tags',
-                message: 'Video already contains this tag!'
-            });
-        }
-        else {
-            this.tags.push(tag);
-            this.tags.sort();
-
-            const icon = createTagIcon(tag, $);
-            icon.video = this;
-            icon.addEventListener('click', () => this._removeTag(icon));
-            this.card.querySelector('.video-tags').appendChild(icon);
-        }
-    }
-
-    //----------------------------------------------------------------------------------------------------------------------------------------
-    /**
      * Creates video card.
      * @returns {Card} Video card
      */
@@ -158,14 +128,6 @@ class Video {
             content: this.$.templates.video.cloneNode(true),
             $: this.$
         }).create();
-
-        const modified = card.querySelector('.modified');
-        if (this.modified) {
-            modified.innerText = 'MODIFIED';
-        }
-        else {
-            modified.style.display = 'none';
-        }
 
         // Stars.
         const stars = card.querySelector('.video-stars');
@@ -182,7 +144,7 @@ class Video {
             }
         }
 
-        // Tags.
+        //Tags
         const tags = card.querySelector('.video-tags');
         for (const tag of this.tags) {
             const icon = createTagIcon(tag, $);
@@ -194,7 +156,6 @@ class Video {
         card.querySelector('.id span').innerText = this.id || '-';
         card.querySelector('.length span').innerText = this._formatLength(this.length) || '-';
         card.querySelector('.size span').innerText = formatBytes(this.size) || '-';
-        card.querySelector('.name').innerText = this.name || '';
         card.querySelector('.score').value = this.score || '';
         card.querySelector('.disk').value = this.disk || '';
 
@@ -222,8 +183,6 @@ class Video {
 
         title.querySelector('.poster-card-id').innerText = this.id;
         title.querySelector('.poster-card-score').innerText = this.score;
-
-        if (!this.modified) footer.querySelector('.modified').classList.add('invisible');
 
         const source = decryptImage({
             input: `${this._getThumbsFolder()}/${this.poster}`,
@@ -276,9 +235,6 @@ class Video {
         editButton.addEventListener('click', (event) => {
             event.target.blur();
             this.readCard();
-            if (this.name != this.filename) {
-                this.modified = true;
-            }
             ipcRenderer.send('changed', 'v');
             backButtonCallback();
         });
@@ -286,7 +242,7 @@ class Video {
 
         const backButton = document.createElement('button');
         backButton.innerText = 'BACK';
-        backButton.classList.add('large');
+        backButton.classList.add('large', 'edit-back');
         backButton.addEventListener('click', backButtonCallback);
         buttons.appendChild(backButton);
         this.$.content.appendChild(buttons);
@@ -352,12 +308,6 @@ class Video {
             return 'star';
         }
 
-        if (!this.tags.length) {
-            this.card.scrollIntoView();
-            this.card.click();
-            return 'tag';
-        }
-
         return true;
     }
 
@@ -380,39 +330,41 @@ class Video {
      * @param {Card} card 
      */
     _createThumbs(container, card) {
+        const thumbs = this.isNew ? getFiles({folder: this.thumbsFolder}) : getFiles({ folder: this._getThumbsFolder() });
 
-        const thumbs = this.isNew ? getFiles({ folder: this.thumbsFolder }) : getFiles({ folder: this._getThumbsFolder() });
+        if (thumbs instanceof Array) {
 
-        for (const thumb of thumbs) {
+            for (const thumb of thumbs) {
 
-            let img = document.createElement('img');
-            img.src = this.isNew ? thumb : decryptImage({ input: thumb, password: this.$.password });
-            img.classList.add('pointer');
-            const name = path.basename(thumb).split('.')[0];
-            if (this.poster == name) img.classList.add('poster');
+                let img = document.createElement('img');
+                img.src = this.isNew ? thumb : decryptImage({ input: thumb, password: this.$.password });
+                img.classList.add('pointer');
+                const name = path.basename(thumb).split('.')[0];
+                if (this.poster == name) img.classList.add('poster');
 
-            img.addEventListener('click', (event) => {
-                //const name = path.basename( thumb ).split( '.' )[0];
-                if (event.getModifierState("Control")) {
-                    if (this.poster == name) {
-                        ipcRenderer.sendSync('dialog', {
-                            type: 'inform',
-                            title: 'Remove Thumbnail',
-                            message: 'This image is the poster of this video!\nPlease, select a new poster image before deleting this one.'
-                        });
+                img.addEventListener('click', (event) => {
+                    //const name = path.basename( thumb ).split( '.' )[0];
+                    if (event.getModifierState("Control")) {
+                        if (this.poster == name) {
+                            ipcRenderer.sendSync('dialog', {
+                                type: 'inform',
+                                title: 'Remove Thumbnail',
+                                message: 'This image is the poster of this video!\nPlease, select a new poster image before deleting this one.'
+                            });
+                        }
+                        else {
+                            img.remove();
+                            deleteFile(thumb);
+                        }
                     }
                     else {
-                        img.remove();
-                        deleteFile(thumb);
+                        card.querySelector('.poster').classList.remove('poster');
+                        this.poster = name;
+                        img.classList.add('poster');
                     }
-                }
-                else {
-                    card.querySelector('.poster').classList.remove('poster');
-                    this.poster = name;
-                    img.classList.add('poster');
-                }
-            });
-            container.appendChild(img);
+                });
+                container.appendChild(img);
+            }
         }
     }
 

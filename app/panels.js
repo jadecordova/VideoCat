@@ -4,7 +4,6 @@ const fse = require('fs-extra');
 
 const {
     decryptImage,
-    encryptJSON,
     saveImage
 } = require('./encryption');
 
@@ -14,6 +13,7 @@ const {
     fillForm,
     findStars,
     newID,
+    paste,
     readForm,
     showCards,
     validate
@@ -34,20 +34,6 @@ const searchStarsPanel = document.getElementById('searchstars-panel');
 const searchStarsPanelButton = searchStarsPanel.querySelector('#star-search-button');
 const searchStarsPanelform = searchStarsPanel.querySelector('#star-search-content');
 const searchStarsPanelgrid = searchStarsPanel.querySelector('#search-stars-grid');
-//----------------------------------------------------------------------------------------------
-const totalButton = document.querySelector('#total-button');
-const specialsButton = document.querySelector('#special-button');
-const modifiedButton = document.querySelector('#modified-button');
-const backedupButton = document.querySelector('#backedup-button');
-const tobackupButton = document.querySelector('#tobackup-button');
-const todeleteButton = document.querySelector('#todelete-button');
-const highestButton = document.querySelector('#highest-button');
-const backupButton = document.querySelector('#backup-button');
-const deleteButton = document.querySelector('#delete-button');
-const updateButton = document.querySelector('#update-button');
-const cleanButton = document.querySelector('#clean-button');
-//----------------------------------------------------------------------------------------------
-const editTagsContent = document.getElementById('edit-tags-content');
 //----------------------------------------------------------------------------------------------
 const closeButtons = document.querySelectorAll('.close-panel-button');
 for (const button of closeButtons) {
@@ -151,6 +137,34 @@ function editStar(star, $) {
 
 //----------------------------------------------------------------------------------------------------------------------------------------
 /**
+ * Loads a folder of videos.
+ * @param {object} $ - References object.
+ * @param {function} getVideosFolderData 
+ */
+function initLoadVideosPanel($, getVideosFolderData) {
+
+    document.getElementById('videosFolder-button').addEventListener('click', (event) => {
+        event.target.blur();
+
+        const folders = ipcRenderer.sendSync('dialog', {
+            type: 'folder',
+            title: 'Select videos folder',
+            buttonLabel: 'SELECT'
+        });
+
+        if (folders) {
+            document.getElementById('videosFolder').value = folders[0];
+        }
+    });
+
+    document.getElementById('load-videos-button').addEventListener('click', (event) => {
+        event.target.blur();
+        getVideosFolderData($);
+    });
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+/**
  * Sets up search star panel.
  * @param {object} $ - References object.
  */
@@ -206,11 +220,42 @@ function initSearchStarsPanel($) {
 
 //----------------------------------------------------------------------------------------------------------------------------------------
 /**
+ * Creates the search video screen.
+ * @param {object} $ - References object.
+ */
+function initSearchVideosPanel($, searchVideos) {
+    global.activeVideo = null;
+
+    const form = document.getElementById('search-videos-content');
+
+    form.querySelector('#search').addEventListener('click', (event) => {
+        event.target.blur();
+        $.grid.innerHTML = '';
+        const data = readForm(form);
+
+        data.tags = [...form.querySelectorAll('.tag-icon')].map(icon => icon.tag);
+        data.stars = [...form.querySelectorAll('.star-card')].map(card => card.star);
+
+        const videos = searchVideos($, data);
+
+        showCards($, {
+            elements: videos,
+            container: $.grid,
+            callback: () => {
+                $.content.innerHTML = '';
+                $.content.appendChild($.grid);
+            }
+        });
+    });
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+/**
  * Sets up settings panel.
  * @param {object} $ - References object.
  */
 function initSettingsPanel($) {
-    
+
     const okButton = $.panels.settings.querySelector('#settings-OK');
     const virtualDub = $.panels.settings.querySelector('#virtualdub');
     const width = $.panels.settings.querySelector('#width');
@@ -300,6 +345,37 @@ function initStarPanel($) {
 
 //----------------------------------------------------------------------------------------------------------------------------------------
 /**
+ * Sets up top videos panel.
+ * @param {object} $ - References object.
+ * @param {function} searchVideos 
+ */
+function initTopVideosPanel($, searchVideos) {
+
+    $.panels.topvideos.querySelector('#top-videos-button').addEventListener('click', (event) => {
+        event.target.blur();
+        $.content.innerHTML = '';
+        const data = readForm($.panels.topvideos.querySelector('#top-videos-content'));
+        data.maximum ||= 100;
+        let videos;
+        if (data.disk ) {
+            videos = searchVideos($, data);
+        }
+        else {
+            videos = $.videos;
+        }
+        videos.sort((a, b) => (a.score > b.score) ? -1 : 1);
+        const result = videos.slice(0, data.maximum);
+        $.grid.innerHTML = '';
+        const container = $.content.appendChild($.grid);
+        showCards($, {
+            elements: result,
+            container
+        });
+    });
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+/**
  * Shows panel for adding or editing a star.
  * @param {object} $ - References object.
  * @param {Star} star - Star object.
@@ -327,9 +403,50 @@ function showStarsPanel($, star) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------
+/**
+ * Shows previous or next star.
+ * @param {string} arrow - Navigation direction ('left' or 'right').
+ * @param {object} $ - References object.
+ */
+function starNavigation( arrow, $ )
+{
+    let index = $.stars.findIndex( ( star ) => star.id == $.panels.stars.star.id );
+
+    switch ( arrow )
+    {
+        case 'left':
+            if ( index > 0 )
+            {
+                index--;
+            }
+            break;
+
+        case 'right':
+            if ( index < $.stars.length - 1 )
+            {
+                index++;
+            }
+            break;
+    }
+
+    $.panels.stars.star = $.stars[index];
+
+    fillForm(
+        starsPanelForm,
+        $.panels.stars.star,
+        decryptImage( {
+            input: `${$.photos}/${String( $.panels.stars.star.id )}`,
+            password: $.password
+        } ) );
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------
 module.exports = {
+    initLoadVideosPanel,
     initSearchStarsPanel,
+    initSearchVideosPanel,
     initSettingsPanel,
     initStarPanel,
+    initTopVideosPanel,
     showStarsPanel
 }

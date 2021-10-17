@@ -1,3 +1,27 @@
+const {
+    readFile,
+    renameImages,
+    writeFile
+} = require('./io');
+
+const {
+    encryptFolder,
+    encryptJSON
+} = require('./encryption');
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+/**
+ * Crude back functionality. Needs rethinking!
+ * @param {object} $ - References object.
+ * @param {HTMLElement} container - Element to go bact to.
+ */
+function back($, container) {
+    $.content.innerHTML = '';
+    global.activeVideo = null;
+    global.activeCard = null;
+    $.content.appendChild(container);
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------------
 /**
  * Clears form.
@@ -105,6 +129,17 @@ function find(elements, options) {
 
 //----------------------------------------------------------------------------------------------------------------------------------------
 /**
+ * Finds the index of an object in an array.
+ * @param {object[]} array - Array of objects to search.
+ * @param {object} element - Element to find.
+ * @returns {number} The index of the element.
+ */
+function findIndex(array, element) {
+    return array.findIndex(t => t == element);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+/**
  * 
  * @param {object} $ - References object.
  * @param {object} params - Search parameters. 
@@ -116,7 +151,7 @@ function find(elements, options) {
  * @param {number} params.year - Year of birth. 
  * @returns 
  */
- function findStars( $, {
+function findStars($, {
     fullName,
     firstName,
     lastName,
@@ -124,24 +159,34 @@ function find(elements, options) {
     month,
     year,
     birthPlace
-} )
-{
-    const result = $.stars.filter( ( star ) =>
-    {
+}) {
+    const result = $.stars.filter((star) => {
         let results = [];
 
-        if ( fullName ) results.push( star.fullName.toUpperCase() == fullName.toUpperCase() || star.aliases.toUpperCase().includes( fullName.toUpperCase() ) );
-        if ( firstName ) results.push( star.firstName.toUpperCase().includes( firstName.toUpperCase() ) || star.aliases.toUpperCase().includes( firstName.toUpperCase() ) );
-        if ( lastName ) results.push( star.lastName.toUpperCase().includes( lastName.toUpperCase() ) || star.aliases.toUpperCase().includes( lastName.toUpperCase() ) );
-        if ( birthPlace ) results.push( star.birthPlace.toUpperCase().includes( birthPlace.toUpperCase() ) );
-        if ( day ) results.push( Number( star.day ) == Number( day ) );
-        if ( month ) results.push( Number( star.month ) == Number( month ) );
-        if ( year ) results.push( Number( star.year ) == Number( year ) );
+        if (fullName) results.push(star.fullName.toUpperCase() == fullName.toUpperCase());
+        if (firstName) results.push(star.firstName.toUpperCase().includes(firstName.toUpperCase()));
+        if (lastName) results.push(star.lastName.toUpperCase().includes(lastName.toUpperCase()) );
+        if (birthPlace) results.push(star.birthPlace.toUpperCase().includes(birthPlace.toUpperCase()));
+        if (day) results.push(Number(star.day) == Number(day));
+        if (month) results.push(Number(star.month) == Number(month));
+        if (year) results.push(Number(star.year) == Number(year));
 
-        return !results.includes( false );
-    } );
+        return !results.includes(false);
+    });
 
     return result;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+/**
+ * Finds videos featuring star.
+ * @param {Star} star - Star object.
+ * @param {Videos[]} videos - Array of video objects
+ * @returns {Video[]} Array of star videos.
+ */
+function findVideos(star, videos) {
+
+    return videos.filter((video) => video.stars.includes(star.fullName));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------
@@ -177,12 +222,84 @@ function formatDate({ year, month, day }) {
 
 //----------------------------------------------------------------------------------------------------------------------------------------
 /**
+ * Hides progress bar.
+ * @param {object} $ - References object.
+ */
+function hideProgress($) {
+    $.progressContainer.style.display = 'none';
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+function loadData(starsFile, starsFolder, $) {
+
+    if ($.stars = readStarsFile(starsFile)) {
+        if (writeFile('./json/s', encryptJSON($.stars, $.password))) {
+            encryptFolder({
+                sourceFolder: starsFolder,
+                password: $.password
+            });
+            renameImages(starsFolder, $);
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+/**
  * Gets next ID number.
  * @param {objects[]} objects - Array of Stars or Videos.
  * @returns {number} The next available ID number.
  */
 function newID(objects) {
     return Math.max(...objects.map(item => item.id), 0) + 1;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+/**
+ * Pastes clipboard contents
+ * @returns {object} Paste contents.
+ */
+async function paste() {
+    let blob;
+    const clipboardItems = await navigator.clipboard.read();
+    for (const clipboardItem of clipboardItems) {
+        for (const type of clipboardItem.types) {
+            blob = await clipboardItem.getType(type);
+
+            if (type.startsWith('image')) {
+                return { type: 'image', value: URL.createObjectURL(blob) };
+            }
+            else if (type.includes('plain')) {
+                let info = await blob.text();
+                return { type: 'text', value: info };
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+/**
+ * Creates object from age string.
+ * @param {string} ageString - Age in string format.
+ * @returns {object} Custom date object.
+ */
+function parseAge(ageString) {
+    result = {
+        year: 0,
+        month: 0,
+        day: 0
+    };
+
+    if (ageString) {
+        const search = /(?<month>Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s*(?<day>\d{1,2})\s*,\s*(?<year>\d{4})/;
+        const match = ageString.match(search);
+
+        if (match) {
+            result.year = Number(match.groups.year);
+            result.month = months.get(match.groups.month);
+            result.day = Number(match.groups.day);
+        }
+    }
+    return result;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------
@@ -214,6 +331,41 @@ function readForm(container) {
         result[input.className.split(' ')[0]] = value;
     }
     return result;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+/**
+ * Reads stars from file.
+ * @param {string} starsFile - Path to stars file.
+ * @param {number} initialID - Initial ID to be assigned.
+ * @returns {Star[]} Array of Star objects.
+ */
+function readStarsFile(starsFile, initialID = 0) {
+    const stars = [];
+    const raw = readFile(starsFile).toString();
+
+    if (raw) {
+        const lines = raw.replace(/[\r]/g, '').split('\n');
+        for (line of lines) {
+            if (line) {
+                let starArray = line.split('#');
+                let starAge = parseAge(starArray[3]);
+                let star = {
+                    id: ++initialID,
+                    firstName: starArray[1],
+                    lastName: starArray[2],
+                    fullName: starArray[1] + (starArray[2] ? ' ' + starArray[2] : ''),
+                    year: starAge.year,
+                    month: starAge.month,
+                    day: starAge.day,
+                    birthPlace: starArray[4].toUpperCase().includes('NO DATA') ? '' : clean(starArray[4])
+                }
+                stars.push(new Star(star));
+            }
+        }
+        return stars;
+    }
+    return false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------
@@ -256,6 +408,33 @@ function showCards($, { elements, container, callback, small, strips }) {
         $.loop = setTimeout(loop.bind(null, calls * series), 10);
     }
     loop(0);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+/**
+ * 
+ * @param {object} params - Parameters. 
+ * @param {object} params.$ - References object. 
+ * @param {number} params.value - Progress bar value. 
+ * @param {string} params.title - Progress bar title. 
+ */
+function showProgress({ $, value, title }) {
+    $.progress.setAttribute('max', value);
+    $.progress.value = 0;
+    $.progressTitle.innerText = title;
+    $.progressContainer.style.display = 'block';
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+/**
+ * Sorts array by property.
+ * @param {array} array - Array to be sorted.
+ * @param {string} property - Property to sort array by.
+ * @param {boolean} descending - Sort in descending order?
+ */
+function sortArray(array, property, descending) {
+    const factor = descending ? -1 : 1;
+    array.sort((a, b) => (a[property] > b[property]) ? factor : -factor);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------
@@ -318,16 +497,26 @@ function validate(...fields) {
 
 //----------------------------------------------------------------------------------------------------------------------------------------
 module.exports = {
+    back,
     clearForm,
     cleanStarNames,
     createTagIcon,
     fillForm,
     find,
+    findIndex,
     findStars,
+    findVideos,
+    formatBytes,
     formatDate,
+    hideProgress,
+    loadData,
     newID,
+    parseAge,
+    paste,
     readForm,
     showCards,
+    showProgress,
+    sortArray,
     splitFileName,
     titleCard,
     validate

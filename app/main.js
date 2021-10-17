@@ -92,20 +92,6 @@ const menuTemplate = [
                     label: 'Search stars',
                     accelerator: 'Alt+S',
                     click: menus
-                },
-                {
-                    id: 'top-stars',
-                    label: 'Top stars',
-                    accelerator: 'Alt+T',
-                    click: menus
-                },
-                {
-                    type: 'separator'
-                },
-                {
-                    id: 'substitutions',
-                    label: 'Star substitutions...',
-                    click: menus
                 }
             ]
     },
@@ -150,22 +136,6 @@ const menuTemplate = [
             ]
     },
     {
-        label: 'Storage',
-        submenu:
-            [
-                {
-                    id: 'storage-info',
-                    label: 'Storage info',
-                    click: menus
-                },
-                {
-                    id: 'update-container',
-                    label: 'Update container',
-                    click: menus
-                }
-            ]
-    },
-    {
         label: 'Utilities',
         submenu:
             [
@@ -200,30 +170,9 @@ const menuTemplate = [
                     id: 'thumbs',
                     label: 'Generate thumbs...',
                     click: menus // mThumbs
-                },
-                {
-                    id: 'tags',
-                    label: 'Tags',
-                    accelerator: 'CmdOrCtrl+T',
-                    click: menus
-                },
-                {
-                    id: 'edit-tags',
-                    label: 'Edit tags',
-                    accelerator: 'CmdOrCtrl+Shift+T',
-                    click: menus
-                },
-                {
-                    id: 'icons',
-                    label: 'Rebuild icons...',
-                    click: menus // mRebuildTagIcons
-                },
-                {
-                    id: 'extra',
-                    label: 'Extra',
-                    click: menus // mRebuildTagIcons
                 }
             ]
+        
     }
 ];
 

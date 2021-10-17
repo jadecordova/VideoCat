@@ -169,7 +169,6 @@ class Star {
 
         name.innerText = this.fullName;
         place.innerText = this.birthPlace || '';
-        aliases.innerText = this.aliases || '';
         date.innerText = formatDate({
             year: this.year,
             month: this.month,
@@ -183,7 +182,7 @@ class Star {
         image.id = `star-${this.id}`;
 
         if (starVideos.length) {
-            highest.innerText = 'Highest score: ' + starVideos[0].score || '';
+            //highest.innerText = 'Highest score: ' + starVideos[0].score || '';
             const starTags = {};
             for (const video of starVideos) {
                 for (const tag of video.tags) {
