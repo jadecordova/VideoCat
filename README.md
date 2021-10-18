@@ -16,3 +16,15 @@ An Electron app to catalog my movie collection.
 - View top-rated movies.
 
  ![Add videos](screens/2.png "Add videos")
+ ![View/Search stars](screens/3.png "View/Search stars")
+ ![Star videos](screens/4.png "Star videos")
+ ![Video info](screens/5.png "Video info")
+ ![Top videos](screens/6.png "Top videos")
+
+## To do
+- Add tags functionality (was removed to refactor).
+- Save modified videos (was removed to refactor).
+- Create UI/UX!!!
+- Incorporate backup functionality (was removed to refactor).
+- Incorporate delete functionality (was removed to refactor).
+- Play video directly from app?
