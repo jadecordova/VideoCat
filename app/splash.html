@@ -83,8 +83,7 @@
 
     button.addEventListener( 'click', () =>
     {
-        ipcRenderer.sendSync( 'password', 'lcdvalerieylinsabelnoguera' );
-        //ipcRenderer.send( 'password', password.value );
+        ipcRenderer.send( 'password', password.value );
     } );
 
     ipcRenderer.on( 'wrong-password', ( event, args ) =>
