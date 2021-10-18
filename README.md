@@ -14,3 +14,5 @@ An Electron app to catalog my movie collection.
 - Search stars.
 - View star movies.
 - View top-rated movies.
+
+ ![Add videos](screens/2.png "Add videos")
