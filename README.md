@@ -22,6 +22,7 @@ An Electron app to catalog my movie collection.
  ![Top videos](screens/6.png "Top videos")
 
 ## To do
+- Set first usage set up (create password). Currently working on password = 1234.
 - Add tags functionality (was removed to refactor).
 - Save modified videos (was removed to refactor).
 - Create UI/UX!!!
